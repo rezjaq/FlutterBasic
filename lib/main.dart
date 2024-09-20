@@ -277,6 +277,8 @@ class _MyHomePageState extends State<MyHomePage> {
             MyLayout(),
             DatePickerWidget(),
             TextFieldWidget(),
+            LoadingCupertinoWidget(),
+            // FabWidget(),
           ],
         ),
       ),

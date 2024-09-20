@@ -91,4 +91,4 @@ penjelasan :
 
 ### Tugas Praktikum
 
-![alt text](lib/image/tugas2.png)
+![alt text](lib/image/tugas.png)
