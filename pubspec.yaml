@@ -53,6 +53,7 @@ dev_dependencies:
 flutter:
   assets:
     - lib/image/logo_polinema.png
+    - lib/image/rinjani.jpeg
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
