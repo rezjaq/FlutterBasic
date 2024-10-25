@@ -6,187 +6,74 @@
 
 # Kelas: TI-3C
 
-## Minggu Ke-7
+<br>
 
-### Langkah 2 : Menambahkan Plugin
+# Minggu Ke-10
 
-![alt text](/lib/image/p7.png)
+# Tugas Praktikum 1: Dasar State dengan Model-View
 
-### Langkah 3 : Buat File red_text_widget.dart
+1.  Selesaikan langkah-langkah praktikum tersebut, lalu dokumentasikan berupa GIF hasil akhir praktikum beserta penjelasannya di file README.md! Jika Anda menemukan ada yang error atau tidak berjalan dengan baik, silakan diperbaiki.
+2.  Jelaskan maksud dari langkah 4 pada praktikum tersebut! Mengapa dilakukan demikian?
 
-```dart
-import 'package:flutter/material.dart';
+    answers :
+    Langkah 4 pada praktikum tersebut mengarahkan Anda untuk membuat file plan.dart di dalam folder models dan mengisinya dengan kode untuk mendefinisikan kelas Plan. Berikut adalah penjelasan dan alasan di balik langkah ini:
 
-class RedTextWidget extends StatelessWidget {
-  const RedTextWidget({Key? key}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-```
+    Membuat Struktur Data: Kelas Plan berfungsi sebagai model data yang menyimpan daftar tugas. Ini membantu memisahkan logika bisnis dari tampilan (UI), yang merupakan praktik terbaik dalam pengembangan aplikasi.
+    Organisasi Kode: Dengan menempatkan model di folder models, kode menjadi lebih terorganisir dan mudah dikelola. Ini memudahkan pengembang untuk menemukan dan memperbarui bagian tertentu dari aplikasi.
+    Pemeliharaan dan Skalabilitas: Memisahkan model dari tampilan memungkinkan aplikasi untuk lebih mudah dipelihara dan diskalakan. Perubahan pada logika data tidak akan mempengaruhi tampilan dan sebaliknya.
 
-### Langkah 4 : Tambah Widget AutoSizeText
+3.  Mengapa perlu variabel plan di langkah 6 pada praktikum tersebut? Mengapa dibuat konstanta ?
 
-```dart
-import 'package:flutter/material.dart';
-import 'package:auto_size_text/auto_size_text.dart';
+    answer :
+    Variabel plan di langkah 6 pada praktikum tersebut berfungsi sebagai model data yang menyimpan daftar tugas. Berikut adalah alasan mengapa variabel ini diperlukan dan mengapa dibuat sebagai konstanta:
 
-class RedTextWidget extends StatelessWidget {
-  final String text;
+    Penyimpanan Data: plan digunakan untuk menyimpan dan mengelola data tugas yang akan ditampilkan di aplikasi. Ini memungkinkan aplikasi untuk menambah, mengubah, dan menghapus tugas sesuai kebutuhan pengguna.
+    Pemeliharaan State: Dengan menggunakan variabel plan, aplikasi dapat dengan mudah melacak perubahan pada daftar tugas dan memperbarui tampilan UI secara dinamis ketika ada perubahan data.
+    Konstanta untuk Immutabilitas: Membuat plan sebagai konstanta (const Plan()) memastikan bahwa instance awal dari Plan tidak dapat diubah. Ini membantu dalam menjaga integritas data dan mencegah perubahan yang tidak disengaja pada instance awal. Immutabilitas juga dapat meningkatkan performa aplikasi karena Flutter dapat mengoptimalkan rendering komponen yang tidak berubah.
 
-  const RedTextWidget({Key? key, required this.text}) : super(key: key);
+4.  Lakukan capture hasil dari Langkah 9 berupa GIF, kemudian jelaskan apa yang telah Anda buat!
 
-  @override
-  Widget build(BuildContext context) {
-    return AutoSizeText(
-      text,
-      style: const TextStyle(color: Colors.red, fontSize: 14),
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
-    );
-  }
-}
-```
+    answer :
 
-### Langkah 5 : Buat Variabel text dan paramenter di contructor
+    ![alt text](lib/image/p1-outout.png)
 
-```dart
-import 'package:flutter/material.dart';
-import 'package:auto_size_text/auto_size_text.dart';
+5.  Apa kegunaan method pada Langkah 11 dan 13 dalam lifecyle state ?
 
-class RedTextWidget extends StatelessWidget {
-  final String text;
+        answer :
+        initState(): Method ini digunakan untuk menginisialisasi state. Pada Langkah 11, initState() digunakan untuk menginisialisasi ScrollController yang akan mengatur perilaku scroll dan keyboard pada aplikasi.
 
-  const RedTextWidget({Key? key, required this.text}) : super(key: key);
+    dispose(): Method ini digunakan untuk membersihkan resource ketika widget tidak lagi digunakan1. Pada Langkah 13, dispose() digunakan untuk membersihkan ScrollController agar tidak terjadi kebocoran memori.
 
-  @override
-  Widget build(BuildContext context) {
-    return AutoSizeText(
-      text,
-      style: const TextStyle(color: Colors.red, fontSize: 14),
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
-    );
-  }
-}
-```
+Tugas Praktikum 2: 2: InheritedWidget
 
-### Langkah 6 : Tambahkan Widget di main.dart
+1. Selesaikan langkah-langkah praktikum tersebut, lalu dokumentasikan berupa GIF hasil akhir praktikum beserta penjelasannya di file README.md! Jika Anda menemukan ada yang error atau tidak berjalan dengan baik, silakan diperbaiki sesuai dengan tujuan aplikasi tersebut dibuat.
+2. Jelaskan mana yang dimaksud InheritedWidget pada langkah 1 tersebut! Mengapa yang digunakan InheritedNotifier?
 
-```dart
-void main() {
-  runApp(const MyApp());
-}
+   answer :
+   Pada langkah 1, yang dimaksud dengan InheritedWidget adalah sebuah widget yang memungkinkan data atau state untuk dibagikan ke seluruh widget tree tanpa harus melewati constructor dari setiap widgetInheritedWidget sangat berguna untuk mengelola state yang perlu diakses oleh banyak widget dalam aplikasi Flutter1.
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+   Namun, dalam kasus ini, digunakan InheritedNotifier sebagai gantinyaInheritedNotifier adalah varian dari InheritedWidget yang dirancang khusus untuk bekerja dengan objek Listenable, seperti ChangeNotifier atau ValueNotifier InheritedNotifier memungkinkan widget untuk mendengarkan perubahan pada objek Listenable dan memperbarui dirinya sendiri ketika ada perubahan
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(),
-    );
-  }
-}
+3. Jelaskan maksud dari method di langkah 3 pada praktikum tersebut! Mengapa dilakukan demikian?
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
+   answer :
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home Page'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              color: Colors.yellowAccent,
-              width: 50,
-              child: const RedTextWidget(
-                text: 'You have pushed the button this many times:',
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              color: Colors.greenAccent,
-              width: 100,
-              child: const Text(
-                'You have pushed the button this many times:',
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-```
+   Method initState() adalah bagian dari lifecycle widget di Flutter yang dipanggil sekali ketika stateful widget pertama kali dibuat. Ini adalah tempat yang tepat untuk melakukan inisialisasi yang hanya perlu dilakukan sekali, seperti mengatur controller, listener, atau memulai animasi.
+   Alasan Penggunaan: Dalam konteks praktikum ini, initState() digunakan untuk menginisialisasi ScrollController dan menambahkan listener padanya. Listener ini akan memanggil FocusScope.of(context).requestFocus(FocusNode()) setiap kali ada perubahan pada posisi scroll. Ini berguna untuk menghilangkan fokus dari input field ketika pengguna menggulir daftar, sehingga keyboard akan disembunyikan secara otomatis.
 
-hasil output :
+4. Lakukan capture hasil dari Langkah 9 berupa GIF, kemudian jelaskan apa yang telah Anda buat!
 
-![alt text](/lib/image/p7-output.png)
+   answer : hasilnya tetep sama tidak ada perubahan pada tampilan ui karena pada kode program diatas digunakan untuk memisah antara view dan model
 
-## Tugas Praktikum Minggu Ke-7
+   ![alt text](lib/image/p1-outout.png)
 
-1. Selesaikan Praktikum tersebut, lalu dokumentasikan dan push ke repository Anda berupa screenshot hasil pekerjaan beserta penjelasannya di file README.md!
-2. Jelaskan maksud dari langkah 2 pada praktikum tersebut!
+# Tugas Praktikum 3: State di Multiple Screens
 
-   jawaban : dimana itu adalah perintah pada terminal digunakan untuk menginstall plugin
+1. Selesaikan langkah-langkah praktikum tersebut, lalu dokumentasikan berupa GIF hasil akhir praktikum beserta penjelasannya di file README.md! Jika Anda menemukan ada yang error atau tidak berjalan dengan baik, silakan diperbaiki sesuai dengan tujuan aplikasi tersebut dibuat.
+2. Berdasarkan Praktikum 3 yang telah Anda lakukan, jelaskan maksud dari gambar diagram berikut ini!
+3. Lakukan capture hasil dari Langkah 14 berupa GIF, kemudian jelaskan apa yang telah Anda buat!
+4. Kumpulkan laporan praktikum Anda berupa link commit atau repository GitHub ke spreadsheet yang telah disediakan!
 
-3. Jelaskan maksud dari langkah 5 pada praktikum tersebut!
+hasil output dari Tugas Praktikum 3 :
 
-   jawaban : dimana sebelumnya masih belum terdapat inisialisasi variabel makanya ditambahkan kode seperti di langkah 5 agar berfungsi
-
-4. Pada langkah 6 terdapat dua widget yang ditambahkan, jelaskan fungsi dan perbedaannya!
-
-   jawaban : Perbedaan utama antara kedua Container adalah pada ukuran lebar, gaya teks (warna merah untuk RedTextWidget dan gaya default untuk Text), serta warna latar belakang yang digunakan. Hasilnya, kedua container memberikan tampilan teks yang berbeda dalam ukuran dan visual meskipun menampilkan konten yang sama.
-
-5. Jelaskan maksud dari tiap parameter yang ada di dalam plugin auto_size_text berdasarkan tautan pada dokumentasi ini !
-
-   jawaban :
-
-   Parameter Deskripsi
-
-   - key\*: Mengontrol bagaimana satu widget menggantikan widget lain di pohon.
-
-   - textKey: Mengatur kunci untuk widget yang dihasilkan.
-
-   - style\*: Jika non-null, gaya yang akan digunakan untuk teks ini.
-
-   - minFontSize: Batasan ukuran teks minimum yang akan digunakan saat mengubah ukuran teks secara otomatis. Diabaikan jika presetFontSizes diatur.
-
-   - maxFontSize: Batasan ukuran teks maksimum yang akan digunakan saat mengubah ukuran teks secara otomatis. Diabaikan jika presetFontSizes diatur.
-
-   - stepGranularity: Ukuran langkah di mana ukuran font disesuaikan dengan kendala.
-
-   - presetFontSizes: Tentukan semua ukuran font yang mungkin. Penting: harus dalam urutan menurun.
-
-   - group: Menyinkronkan ukuran beberapa sAutoSizeText.
-
-   - textAlign\*: Bagaimana teks harus disejajarkan secara horizontal.
-
-   - textDirection\*: Arah teks. Ini menentukan bagaimana nilai textAlign (seperti TextAlign.start atau TextAlign.end) ditafsirkan.
-
-   - locale\*: Digunakan untuk memilih font ketika karakter Unicode yang sama dapat dirender secara berbeda, tergantung pada lokal.
-
-   - softWrap\*: Apakah teks harus putus pada jeda baris lunak.
-
-   - wrapWords: Apakah kata-kata yang tidak muat dalam satu baris harus dibungkus. Default ke true untuk berperilaku seperti Text.
-
-   - overflow\*: Bagaimana luapan visual harus ditangani.
-
-   - overflowReplacement: Jika teks meluap dan tidak sesuai dengan batasnya, widget ini akan ditampilkan sebagai gantinya.
-
-   - textScaleFactor\*: Jumlah piksel font untuk setiap piksel logis. Juga memengaruhi minFontSize, maxFontSize, dan presetFontSizes.
-
-   - maxLines: Jumlah baris maksimum opsional untuk teks yang akan dibentang.
-
-   - semanticsLabel\*: Label semantik alternatif untuk teks ini.
+![alt text](lib/image/p3-tugas.png)
