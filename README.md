@@ -8,31 +8,14 @@
 
 <br>
 
-# Minggu Ke-11
+# Minggu Ke-12
 
-# Praktikum 1: Mengunduh Data dari Web Service (API)
+# Praktikum 1: Dart Streams
 
-## Langkah 1: Buat Project Baru
-
-```dart
-flutter pub add http
-```
-
-## Langkah 2: Cek File pubspec.yaml
-
-![alt text](/lib/image/m11-p1-l2.png)
-
-## Langkah 3: buka file main.dart
-
-Soal 1
-Tambahkan nama panggilan Anda pada title app sebagai identitas hasil pekerjaan Anda
+## Soal 1
 
 ```dart
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'package:http/http.dart';
-import 'package:http/http.dart' as http;
-import 'package:async/async.dart';
 
 void main() {
   runApp(const MyApp());
@@ -49,453 +32,163 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const FuturePage(),
+      home: const StreamHomePage(),
     );
   }
 }
 
-class FuturePage extends StatefulWidget {
-  const FuturePage({Key? key}) : super(key: key);
+class StreamHomePage extends StatefulWidget {
+  const StreamHomePage({Key? key}) : super(key: key);
 
   @override
-  State<FuturePage> createState() => _FuturePageState();
+  State<StreamHomePage> createState() => _StreamHomePageState();
 }
 
-class _FuturePageState extends State<FuturePage> {
-  // late Completer<int> completer;
-
-  String result = '';
-  // bool isLoading = false;
-
+class _StreamHomePageState extends State<StreamHomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Back From the Future'),
-      ),
-      body: Center(
-        child: Column(
-          children: [
-            const Spacer(),
-            ElevatedButton(
-              child: const Text('GO!'),
-              onPressed: () {
-                // returnFG();
-                // getNumber().then((value){
-                //   setState(() {
-                //     result = 'Result: $value';
-                //   });
-                // });
-                // setState(() {
-                //   isLoading = true;
-                //   result = '';
-                // });
-                // getNumber().then((value) {
-                //   setState(() {
-                //     result = value.toString();
-                //     isLoading = false;
-                //   });
-                // }).catchError((_) {
-                //   setState(() {
-                //     result = 'An error occurred';
-                //     isLoading = false;
-                //   });
-                // });
-              },
-            ),
-            const Spacer(),
-            Text(result),
-            const Spacer(),
-            const CircularProgressIndicator(),
-            // if (isLoading) const CircularProgressIndicator(),
-            const Spacer(),
-          ],
-        ),
-      ),
-    );
+    return Container();
   }
-```
-
-## Langkah 4: Tambah Method getData()
-
-```dart
-Future<Response> getData() async {
-    const authority = 'www.googleapis.com';
-    const path = '/books/v1/volumes/junbDwAAQBAJ';
-    Uri url = Uri.https(authority, path);
-    return http.get(url);
-  }
+}
 ```
 
 ## Soal 2
 
-![alt text](/lib/image/m11-p1-soal2.png)
-
-## Langkah 5: Tambahkan kode di elevaluatedButton
-
 ```dart
-onPressed: () {
-                setState(() {});
-                getData().then((value) {
-                  result = value.body.toString().substring(0, 450);
-                  setState(() {});
-                }).catchError((_) {
-                  result = 'An error occured';
-                  setState(() {});
-                });
+import 'package:flutter/material.dart';
+
+class ColorStream {
+  final List<Color> colors = [
+    Colors.blueGrey,
+    Colors.amber,
+    Colors.deepPurple,
+    Colors.lightBlue,
+    Colors.teal,
+    // 5 wanra lainnya
+    Colors.black,
+    Colors.red,
+    Colors.yellow,
+    Colors.cyan,
+    Colors.purple
+  ];
+  Stream<Color> getColors() async* {
+    yield* Stream.periodic(const Duration(seconds: 1), (int t) {
+      int index = t % colors.length;
+      return colors[index];
+    });
+  }
+}
 ```
 
 ## Soal 3
 
-- SubString : mengambil data yang diterima dari hasil permintaan HTTP (value.body) dalam bentuk teks, kemudian mengonversinya menjadi String (jika belum berupa String) dan menggunakan substring(0, 450) untuk memotong hanya 450 karakter pertama dari teks tersebut.
-
-* catcheror : digunakan di sini untuk menangani kondisi ketika getData() mengalami kesalahan, seperti koneksi gagal atau respons dari server tidak sesuai harapan. Jika terjadi kesalahan, variabel result akan diubah menjadi 'An error occured', dan setState dipanggil untuk memperbarui tampilan UI agar pesan kesalahan tersebut dapat muncul di layar.
-
-![alt text](/lib/image/m11-p1-soal3.png)
-
-# Praktikum 2: Menggunakan await/async untuk menghindari callbacks
-
-## Langkah 1: Buka file main.dart
-
-```dart
-Future<int> returnOneAsync() async {
-    await Future.delayed(const Duration(seconds: 3));
-    return 1;
-  }
-
-  Future<int> returnTwoAsync() async {
-    await Future.delayed(const Duration(seconds: 3));
-    return 2;
-  }
-
-  Future<int> returnThreeAsync() async {
-    await Future.delayed(const Duration(seconds: 3));
-    return 3;
-  }
-```
-
-## Langkah 2: Tambah method count()
-
-```dart
-Future<void> count() async {
-    int total = 0;
-    total = await returnOneAsync();
-    total += await returnTwoAsync();
-    total += await returnThreeAsync();
-    setState(() {
-      result = total.toString();
-    });
-  }
-```
+jawaban : digunakan untuk mengoper aliran (stream) yang dihasilkan dari Stream.periodic ke dalam stream getColors secara langsung
 
 ## Soal 4
 
-- jelaskan maksud kode langkah 1 dan 2 jelaskan
-- langkah 1 : Fungsi returnOneAsync, returnTwoAsync, dan returnThreeAsync adalah fungsi asynchronous yang masing-masing menunda eksekusi selama 3 detik menggunakan Future.delayed. Setelah penundaan tersebut, setiap fungsi mengembalikan nilai integer tetap, yaitu 1, 2, dan 3 secara berurutan. Fungsi ini berguna untuk mensimulasikan proses asynchronous, seperti panggilan jaringan atau operasi pemrosesan data, yang memerlukan waktu sebelum hasilnya tersedia.
-
-* langkah 2 : Fungsi count adalah fungsi asynchronous yang digunakan untuk menghitung total dari hasil tiga fungsi asynchronous lainnya: returnOneAsync, returnTwoAsync, dan returnThreeAsync. Pada setiap pemanggilan fungsi, await digunakan untuk menunggu nilai yang dikembalikan sebelum melanjutkan ke pemanggilan berikutnya. Nilai yang dikembalikan dari ketiga fungsi ini dijumlahkan dan disimpan dalam variabel total. Setelah ketiga operasi selesai, setState dipanggil untuk memperbarui nilai result pada tampilan dengan hasil total tersebut.
-
-# Praktikum 3: Menggunakan Completer di Future
-
-## Langkah 1: buka main.dart
-
-```dart
-import 'package:async/async.dart';
-```
-
-## Langkah 2: Tambah variabel dan method
-
-```dart
-late Completer completer;
-
-Future getNumber() {
-  completer = Completer<int>();
-  calculate();
-  return completer.future;
-}
-
-Future calculate() async {
-  await Future.delayed(const Duration(seconds : 5));
-  completer.complete(42);
-}
-```
-
-## Langkah 3: Ganti isi kode onPresed()
-
-```dart
-onPressed: () {
-                getNumber().then((value) {
-                  setState(() {
-                    result = value.toString();
-                  });
-                });
-```
-
-## Langkah 4:
-
-![alt text](/lib/image/m11-p3-l4.png)
+![praktikum 1](/lib/image/gift/m12-p1.gif)
 
 ## Soal 5
 
-- langkah 2: Completer untuk mengelola operasi asynchronous secara manual. Pertama, variabel completer dideklarasikan dengan tipe Completer<int>, yang akan digunakan untuk menyelesaikan sebuah Future dengan nilai integer. Fungsi getNumber menginisialisasi completer, memanggil fungsi calculate, dan kemudian mengembalikan completer.future, yaitu Future yang akan diselesaikan nanti. Fungsi calculate adalah fungsi asynchronous yang menunggu selama 5 detik menggunakan Future.delayed, kemudian memanggil completer.complete(42) untuk menyelesaikan Future dengan nilai 42. Dengan demikian, ketika getNumber dipanggil, ia akan mengembalikan sebuah Future yang akan menyelesaikan nilai 42 setelah jeda waktu 5 detik, memungkinkan pengelolaan alur asynchronous secara eksplisit dalam aplikasi.
+listen dan await for adalah dua cara berbeda untuk berinteraksi dengan Stream di Dart, masing-masing memiliki keunggulan berdasarkan kebutuhan pemrosesan data. listen bekerja dengan mengeksekusi callback setiap kali data baru masuk tanpa harus menunggu elemen sebelumnya selesai diproses, sehingga cocok untuk aplikasi yang membutuhkan respons cepat dan langsung dari stream. Di sisi lain, await for memastikan bahwa data dari stream diproses satu per satu secara berurutan, menunggu hingga setiap elemen selesai sebelum melanjutkan ke elemen berikutnya.
 
-## Langkah 5: ganti method calculate()
-
-```dart
-Future<void> calculate() async {
-    // await Future.delayed(const Duration(seconds: 5));
-    // completer.complete(42);
-    try {
-      await Future.delayed(const Duration(seconds: 5));
-      completer.complete(42);
-    } catch (_) {
-      completer.completeError('Error calculating the number');
-    }
-  }
-```
-
-## Langkha 6: pindah ke onpresed()
-
-```dart
-getNumber().then((value) {
-  setState(() {
-    result = value.toString();
-  });
-}).catchError((e) {
-  result = 'An error occurred';
-});
-```
+# Praktikum 2 : Stream controllers dan sinks
 
 ## Soal 6
 
-- langkah 5-6 : calculate secara asynchronous menunggu selama 5 detik menggunakan Future.delayed. Setelah waktu tunggu, completer.complete(42) dipanggil untuk menyelesaikan Future dengan nilai 42. Jika terjadi error selama eksekusi, completer.completeError('Error calculating the number') akan dipanggil, sehingga Future menghasilkan error. Pemanggilan getNumber() akan mengembalikan Future tersebut. Kemudian, then digunakan untuk menangani hasil dari Future dan menampilkan hasil value (dalam bentuk String) ke dalam variabel result di dalam setState. Jika terjadi error, catchError akan menampilkan pesan 'An error occurred' di result.
+![alt text](/lib/image/m12-p2.png)
 
-## Praktikum 4: Memanggil Future secara paralel
+# Praktikum 3 :
 
-## Langkah 1: buka file main.dart
-
-```dart
-void returnFG() {
-    FutureGroup<int> futureGroup = FutureGroup();
-    futureGroup.add(returnOneAsync());
-    futureGroup.add(returnTwoAsync());
-    futureGroup.add(returnThreeAsync());
-    futureGroup.close();
-    futureGroup.future.then((List<int> value) {
-      int total = 0;
-      for (var element in value) {
-        total += element;
-      }
-      setState(() {
-        result = total.toString();
-      });
-    });
-  }
-```
-
-## Langkah 2: edit onPresed()
-
-```dart
-returnFG();
-```
+![alt text](/lib/image/gift/m12-p2.gif)
 
 ## Soal 7
 
-![alt text](/lib/image/m11-p4-l2.png)
+Langkah 13 - void addNumberToSink(int newNumber):
+Fungsi ini bertujuan untuk menambahkan angka (dalam parameter newNumber) ke dalam Stream. Fungsi ini menggunakan controller.sink.add(newNumber) untuk mengirim angka baru ke stream. Setiap kali angka baru ditambahkan, stream akan memperbarui pendengarnya.
 
-## Langkah 4: ganti variabel futureGroup
+Langkah 14 - void close():
+Fungsi ini menutup StreamController agar tidak menerima input lagi. Ini merupakan langkah penting untuk mencegah kebocoran memori. Ketika controller.close() dipanggil, maka stream tidak akan menerima data tambahan atau mendengarkan perubahan apapun.
 
-```dart
-void returnFG() {
-  final futures = Future.wait<int>([
-    returnOneAsync(),
-    returnTwoAsync(),
-    returnThreeAsync(),
-  ]);
+Langkah 15 - void addError():
+Fungsi ini bertujuan untuk menambahkan error ke dalam stream dengan cara memanggil controller.sink.addError('error'). Ini akan memicu error pada stream, yang memungkinkan kita menguji bagaimana aplikasi menangani situasi ketika terjadi kesalahan pada data stream. Dalam konteks ini, menambahkan error ini berfungsi untuk simulasi saja.
 
-  futures.then((List<int> value) {
-    int total = 0;
-    for (var element in value) {
-      total += element;
-    }
-    setState(() {
-      result = total.toString();
-    });
-  });
-}
-```
+![alt text](/lib/image/gift/m12-p3.gif)
 
 ## Soal 8
 
-- Jelaskan maksud perbedaan kode langkah 1 dan 4 : Perbedaan antara kode langkah 1 dan langkah 4 terletak pada cara menangani beberapa Future secara bersamaan. Pada kode langkah 1, digunakan FutureGroup, yang memungkinkan penambahan beberapa Future secara manual satu per satu dan kemudian menunggu hasilnya setelah grup Future ditutup dengan futureGroup.close(). Sedangkan pada kode langkah 4, digunakan Future.wait(), yang langsung menerima sebuah daftar Future dan mengembalikan Future yang selesai ketika semua Future di dalam daftar tersebut selesai. Kode langkah 4 lebih ringkas karena langsung menggunakan Future.wait() untuk mengelola beberapa Future tanpa perlu menambahkannya satu per satu.
+Langkah pertama mendeklarasikan sebuah variabel transformer bertipe StreamTransformer<int, int> yang akan digunakan untuk memanipulasi data yang diterima oleh stream. StreamTransformer ini diinisialisasi dengan menggunakan fromHandlers, yang memungkinkan kita untuk mengatur penanganan data, error, dan saat stream selesai.
 
-# Praktikum 5: Menangani Respon Error pada Async Code
+Langkah kedua mendefinisikan tiga handler dalam fromHandlers:
 
-## Langkah 1: buka file main.dart
+handleData: Ketika ada data yang diterima, nilai tersebut akan diteruskan ke sink tanpa perubahan, yaitu dengan sink.add(value).
+handleError: Jika ada error yang terjadi, maka error tersebut akan di-handle dengan mengirimkan nilai -1 ke sink menggunakan sink.add(-1).
+handleDone: Ketika stream selesai, handler ini akan dipanggil untuk menutup stream menggunakan sink.close().
+Langkah ketiga adalah memanfaatkan transformer tersebut dengan memanggil numberStreamController.stream.transform(transformer), yang menghubungkan stream dengan transformer yang sudah didefinisikan. Kemudian, menggunakan listen untuk mendengarkan data yang diterima, dan jika ada data yang masuk, nilai tersebut akan diset ke dalam lastNumber. Jika terjadi error, maka nilai lastNumber akan diset menjadi -1.
 
-```dart
-Future returnError() async {
-    await Future.delayed(const Duration(seconds: 2));
-    throw Exception('Something went wrong');
-  }
-```
-
-## Langkah 2: Evalated Button
-
-```dart
-onPressed: () {
-                returnError().then((value) {
-                  setState(() {
-                    result = 'Succes';
-                  });
-                }).catchError((onError) {
-                  setState(() {
-                    result = onError.toString();
-                  });
-                }).whenComplete(() => print('completed'));
-```
-
-## Langkah 3: Run
+# Praktikum 4 : Subscribe ke stream events
 
 ## Soal 9
 
-![alt text](/lib/image/m11-p5-l3.png)
+![alt text](/lib/image/m11-p9.png)
 
-## Langkah 4: tambah method handleError()
+initState() digunakan untuk menginisialisasi objek yang diperlukan dan memulai aliran data stream. Di dalam metode ini, objek numberStream dan numberStreamController diinisialisasi, yang memungkinkan untuk mengelola aliran data integer. Stream numberStreamController.stream dilanjutkan dengan mendengarkan setiap perubahan yang terjadi dalam aliran data tersebut menggunakan stream.listen. Ketika data baru (angka) diterima, fungsi callback di dalam setState() akan memutakhirkan nilai lastNumber, yang ditampilkan pada antarmuka pengguna. Jika terjadi kesalahan dalam aliran data, onError akan dipanggil, dan nilai lastNumber akan diubah menjadi -1. Fungsi onDone dipanggil ketika aliran data selesai, dan mencetak pesan "onDone was called". Di akhir dari initState(), pemanggilan subscription.cancel() akan menghentikan aliran data (subscription) yang sudah aktif.
 
-```dart
-Future handleError() async {
-    try {
-      await returnError();
-    } catch (error) {
-      setState(() {
-        result = error.toString();
-      });
-    } finally {
-      print('complete');
-    }
-  }
-```
+Sedangkan pada fungsi addRandomNumber(), angka acak antara 0 hingga 9 dihasilkan menggunakan objek Random, dan jika stream masih terbuka (belum ditutup), angka tersebut ditambahkan ke stream dengan memanggil metode numberStream.addNumberToSink(myNum). Jika stream sudah ditutup, lastNumber diubah menjadi -1 untuk menunjukkan bahwa aliran data sudah tidak aktif lagi.
 
-## Soal 10
+# Praktikum 5 : Multiple stream subscriptions
 
-- Panggil method handleError() tersebut di ElevatedButton, lalu run. Apa hasilnya? Jelaskan perbedaan kode langkah 1 dan 4!
+![alt text](/lib/image/m12-p5.png)
 
-![alt text](/lib/image/m11-p5-soal10.png))
-meskipun hasilnya sama namun dalam pembacaan kode sudah berhasil untuk menangani atau menghandle eror berikut adalah buktinya dalam bentuk terminal
-
-![alt text](/lib/image/m11-p5-soal10output.png)
-
-# Praktikum 6: Menggunakan Future dengan StatefulWidget
-
-## Langkah 1: install plugin geolocator
-
-```dart
-flutter pub add geolocator
-```
-
-## Langkah 2: Tambah permission GPS
-
-```dart
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <application
-```
-
-## Langkah 3: Buat file geolocation.dart
-
-```dart
-import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-
-class LocationScreen extends StatefulWidget {
-  const LocationScreen({super.key});
-
-  @override
-  State<LocationScreen> createState() => _LocationScreenState();
-}
-
-class _LocationScreenState extends State<LocationScreen> {
-  String myPosition = '';
-
-  @override
-  void initState() {
-    super.initState();
-    getPosition().then((Position myPos) {
-      myPosition =
-          'Latitude: ${myPos.latitude.toString()} - Longitude: ${myPos.longitude.toString()}';
-      setState(() {
-        myPosition = myPosition;
-      });
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Current Location')),
-      body: Center(child: Text(myPosition)),
-    );
-  }
-
-  Future<Position> getPosition() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied.');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    return await Geolocator.getCurrentPosition();
-  }
-}
-```
+Error tersebut muncul karena stream yang disini yang digunakan adalah single-subscription stream (yaitu StreamController<int>), yang hanya bisa didengarkan sekali. Solusinya adalah dengan menggunakan StreamController.broadcast()
 
 ## Soal 11
 
-- Tambahkan nama panggilan Anda pada tiap properti title sebagai identitas pekerjaan Anda.
+![alt text](/lib/image/gift/m12-p5.gif)
 
-![alt text](/lib/image/m11-p6-soal11.png)
+Kedua subscription (subscription dan subscription2) mendengarkan stream yang sama, sehingga setiap kali event baru ditambahkan ke stream (numberStreamController.sink.add(currentNumber)), kedua subscription akan menerima dan memproses event tersebut. Setiap event yang diterima akan mengupdate string values yang ada pada widget dengan menambahkan nilai yang diterima, diikuti dengan tanda -. Oleh karena itu, nilai yang sama akan ditampilkan dua kali berturut-turut di dalam tampilan, satu untuk setiap subscription.
 
-## Soal 12
+Sebagai contoh, saat angka pertama kali ditambahkan ke stream, kedua subscription akan mendengarkan stream dan masing-masing menambahkan angka yang sama ke string values. Akibatnya, pada output yang ditampilkan di layar, angka tersebut akan muncul dua kali berturut-turut (misalnya "0 - 0 - 10 - 10 - 20 - 20 - ..." dan seterusnya).
 
-- Jika Anda tidak melihat animasi loading tampil, kemungkinan itu berjalan sangat cepat. Tambahkan delay pada method getPosition() dengan kode await Future.delayed(const Duration(seconds: 3));
-- Apakah Anda mendapatkan koordinat GPS ketika run di browser? Mengapa demikian?
+Untuk menghindari pengulangan seperti ini, Anda bisa memilih untuk memiliki satu subscription saja atau menambahkan logika tambahan untuk membedakan mana event yang sudah diproses oleh satu subscription, namun dalam konteks ini, memang sengaja diizinkan untuk dua subscription mendengarkan stream yang sama.
 
-jawaban : Di browser, terutama di emulator atau pengembangan Flutter Web, akses ke GPS mungkin tidak langsung tersedia karena browser tidak selalu mendukung akses perangkat keras seperti GPS (terutama jika diakses di desktop atau laptop)
+# Praktikum 6 : StreamBuilder
 
-# Praktikum 7: Manajemen Future dengan FutureBuilder
+## Soal 11
+
+![alt text](/lib/image/gift/m12-p6.gif)
+Metode Stream (getNumbers):
+Metode getNumbers adalah sebuah stream yang secara berkala menghasilkan angka acak. Ini menggunakan Stream.periodic, yang menghasilkan nilai baru pada interval waktu yang teratur—dalam hal ini setiap detik (didefinisikan dengan Duration(seconds: 1)). Di dalam fungsi callback (int t), sebuah angka acak antara 0 dan 9 dihasilkan menggunakan kelas Random dari dart:math. Stream ini akan terus menghasilkan dan mengeluarkan angka acak selama stream tersebut aktif.
+
+StreamBuilder pada Widget:
+Pada metode build, widget menggunakan StreamBuilder<int> untuk mendengarkan stream yang berisi angka dari numberStream. StreamBuilder memerlukan dua parameter utama:
+
+stream: Ini adalah stream yang didengarkan oleh widget, yang dalam hal ini adalah numberStream (kemungkinan merupakan instansi dari kelas NumberStream).
+initialData: Ini adalah nilai awal yang digunakan oleh StreamBuilder sebelum ada data yang diterima dari stream. Di sini, nilainya diset menjadi 0.
+Fungsi callback builder dari StreamBuilder memeriksa status stream. Jika ada kesalahan (snapshot.hasError), maka akan mencetak pesan kesalahan. Jika ada data (snapshot.hasData), maka akan menampilkan nilai saat ini dari stream (snapshot.data) dalam bentuk teks di layar. Jika stream belum memiliki data, akan ditampilkan widget kosong (SizedBox.shrink()).
+
+# Praktikum 7 : BLoC Pattren
 
 ## Soal 13
 
--Apakah ada perbedaan UI dengan praktikum sebelumnya? Mengapa demikian?
-Capture hasil praktikum Anda berupa GIF dan lampirkan di README. Lalu lakukan commit dengan pesan "W12: Soal 13".
+![alt text](/lib/image/gift/m12-p7.gif)
 
-jawaban : iya terdapat perbedaan dimana animation loading dulu yang ditampilkan setelah itu baru locationnya di munculkan
+StreamController untuk Manajemen Data:
 
-## Soal 14
+RandomNumberBloc bertanggung jawab untuk menghasilkan angka acak dan mengelolanya menggunakan StreamController<int>.
+StreamController digunakan untuk menangani aliran data yang akan diterima oleh tampilan UI. Dalam hal ini, stream yang digunakan adalah angka acak.
+Sink<void> generateRandomNumber digunakan untuk mengirimkan event ke dalam stream (misalnya ketika tombol ditekan untuk menghasilkan angka acak).
+RandomNumberBloc mendengarkan stream dari \_generateRandomNumberController, dan setiap kali ada event yang dikirim ke stream tersebut, angka acak akan dihasilkan dan disalurkan melalui \_randomNumberController.stream.
+Stream dan StreamBuilder untuk Komunikasi dengan UI:
 
-jawaban : terdapat sedikit perbedaan ui dikarenakan pada kode sebelumnya masih belum ada handling error
+Pada RandomScreen, terdapat sebuah StreamBuilder<int> yang mendengarkan stream dari RandomNumberBloc untuk mendapatkan angka acak yang terbaru.
+StreamBuilder digunakan untuk membangun UI berdasarkan data terbaru dari stream. Ketika angka acak baru dihasilkan oleh stream, UI akan otomatis diperbarui tanpa perlu intervensi manual dari pengembang.
+Memisahkan Logika dari Tampilan:
 
-# Praktikum 8: Navigation route dengan Future Function
-
-![alt text](/lib/image/m11-p8.png)
-![alt text](/lib/image/m11-p8-1.png)
-![alt text](/lib/image/m11-p8-red.png)
-![alt text](/lib/image/m11-p8-green.png)
-
-# Praktikum 9: Memanfaatkan async/await dengan Widget Dialog
-
-![alt text](image.png)
+UI (RandomScreen) hanya berfokus pada tampilan dan tidak berurusan dengan logika bisnis pembuatan angka acak.
+BLoC (RandomNumberBloc) bertanggung jawab penuh dalam menghasilkan angka acak. UI cukup mendengarkan stream dan merender data tersebut.
+Dengan memisahkan logika bisnis dari tampilan, kode menjadi lebih bersih, mudah dipelihara, dan lebih mudah untuk diuji.
+Letak Konsep BLoC:
+Data Stream: Angka acak dihasilkan dan disalurkan menggunakan stream (StreamController<int>). Konsep stream di sini adalah inti dari pola BLoC untuk mengelola dan menyebarkan data secara reaktif.
+Sink untuk Event: Saat tombol ditekan (FloatingActionButton), sebuah event (perintah untuk menghasilkan angka acak) dikirimkan ke sink melalui generateRandomNumber.add(null). Ini menunjukkan bagaimana event dikendalikan di dalam BLoC.
+StreamBuilder untuk UI: UI hanya mendengarkan stream dan menampilkan data yang diterima dari BLoC, tanpa berurusan langsung dengan logika bisnis.

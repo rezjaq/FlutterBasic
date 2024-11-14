@@ -1,10 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_fundamental/location/geolocation.dart';
-import 'package:flutter_fundamental/pages/navigation_dialog.dart';
-import 'package:flutter_fundamental/pages/navigation_first.dart';
 import 'dart:async';
-import 'package:http/http.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'dart:math';
+
+import 'package:flutter_fundamental/pages/random_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,148 +14,196 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Rizqi Reza Danuarta',
+      title: 'Stream Example',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+        primarySwatch: Colors.deepPurple,
       ),
-      home: const NavigationDialogScreen(),
+      home: RandomScreen(),
     );
   }
 }
 
-class FuturePage extends StatefulWidget {
-  const FuturePage({Key? key}) : super(key: key);
+class NumberStream {
+  late StreamController<int> controller;
 
-  @override
-  State<FuturePage> createState() => _FuturePageState();
+  NumberStream() {
+    controller = StreamController<int>.broadcast();
+  }
+
+  void addNumberToSink(int number) {
+    controller.sink.add(number);
+  }
+
+  Stream<int> getNumber() {
+    return controller.stream;
+  }
 }
 
-class _FuturePageState extends State<FuturePage> {
-  late Completer<int> completer;
-  String result = '';
-  String myPosition = ''; // Deklarasi variabel myPosition
+class StreamHomePage extends StatefulWidget {
+  const StreamHomePage({Key? key}) : super(key: key);
+
+  @override
+  State<StreamHomePage> createState() => _StreamHomePageState();
+}
+
+class RandomNumberBloc {
+  final _randomNumberController = StreamController<int>();
+  Stream<int> get randomNumber => _randomNumberController.stream;
+  final _generateRandomNumberController = StreamController<void>();
+  Sink<void> get generateRandomNumber => _generateRandomNumberController.sink;
+
+  RandomNumberBloc() {
+    _generateRandomNumberController.stream.listen((_) {
+      final random = Random();
+      _randomNumberController.sink.add(random.nextInt(100));
+    });
+  }
+
+  void dispose() {
+    _randomNumberController.close();
+    _generateRandomNumberController.close();
+  }
+}
+
+class _StreamHomePageState extends State<StreamHomePage> {
+  final _bloc = RandomNumberBloc();
+
+  @override
+  void dispose() {
+    _bloc.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final myWidget = myPosition == ''
-        ? const CircularProgressIndicator()
-        : Text(
-            myPosition); // Hilangkan 'const' agar bisa tampilkan myPosition yang dinamis
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Current Location'),
+        title: const Text('Random Number'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            myWidget,
-            const Spacer(),
-            ElevatedButton(
-              child: const Text('GO!'),
-              onPressed: () {
-                returnError().then((value) {
-                  setState(() {
-                    result = 'Success';
-                  });
-                }).catchError((onError) {
-                  setState(() {
-                    result = onError.toString();
-                  });
-                }).whenComplete(() => print('completed'));
-                handleError();
-              },
-            ),
-            const Spacer(),
-            Text(result),
-            const Spacer(),
-          ],
+        child: StreamBuilder<int>(
+          stream: _bloc.randomNumber,
+          initialData: 0,
+          builder: (context, snapshot) {
+            return Text(
+              'Random Number: ${snapshot.data}',
+              style: const TextStyle(fontSize: 24),
+            );
+          },
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _bloc.generateRandomNumber.add(null),
+        child: const Icon(Icons.refresh),
       ),
     );
   }
 
-  void returnFG() {
-    final futures = Future.wait<int>([
-      returnOneAsync(),
-      returnTwoAsync(),
-      returnThreeAsync(),
-    ]);
+  // int lastNumber = 0;
+  // late StreamController<int> numberStreamController;
+  // late StreamSubscription subscription;
+  // late StreamSubscription subscription2;
+  // String values = '';
+  // late Timer _timer;
+  // int currentNumber = 0;
+  // late NumberStream numberStream;
 
-    futures.then((List<int> value) {
-      int total = 0;
-      for (var element in value) {
-        total += element;
-      }
-      setState(() {
-        result = total.toString();
-      });
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
 
-  Future returnError() async {
-    await Future.delayed(const Duration(seconds: 2));
-    throw Exception('Something went wrong');
-  }
+  //   numberStream = NumberStream();
+  //   numberStreamController = numberStream.controller;
 
-  Future handleError() async {
-    try {
-      await returnError();
-    } catch (error) {
-      setState(() {
-        result = error.toString();
-      });
-    } finally {
-      print('completed');
-    }
-  }
+  //   subscription = numberStreamController.stream.listen((event) {
+  //     setState(() {
+  //       values += '$event - ';
+  //     });
+  //   }, onError: (error) {
+  //     setState(() {
+  //       lastNumber = -1;
+  //     });
+  //   }, onDone: () {
+  //     print('onDone was called');
+  //   });
 
-  Future<Response> getData() async {
-    const authority = 'www.googleapis.com';
-    const path = '/books/v1/volumes/NMcXmwEACAAJ';
-    Uri url = Uri.https(authority, path);
-    return http.get(url);
-  }
+  //   subscription2 = numberStreamController.stream.listen((event) {
+  //     setState(() {
+  //       values += '$event - ';
+  //     });
+  //   });
 
-  Future<int> returnOneAsync() async {
-    await Future.delayed(const Duration(seconds: 3));
-    return 1;
-  }
+  //   _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+  //     if (currentNumber <= 90) {
+  //       numberStreamController.sink.add(currentNumber);
+  //       currentNumber += 10;
+  //     } else {
+  //       _timer.cancel();
+  //     }
+  //   });
+  // }
 
-  Future<int> returnTwoAsync() async {
-    await Future.delayed(const Duration(seconds: 3));
-    return 2;
-  }
+  // void stopStream() {
+  //   numberStreamController.close();
+  // }
 
-  Future<int> returnThreeAsync() async {
-    await Future.delayed(const Duration(seconds: 3));
-    return 3;
-  }
+  // @override
+  // void dispose() {
+  //   _timer.cancel();
+  //   numberStreamController.close();
+  //   subscription.cancel();
+  //   subscription2.cancel();
+  //   super.dispose();
+  // }
 
-  Future<int> getNumber() {
-    completer = Completer<int>();
-    calculate();
-    return completer.future;
-  }
+  // void addRandomNumber() {
+  //   Random random = Random();
+  //   int myNum = random.nextInt(10);
+  //   if (!numberStreamController.isClosed) {
+  //     numberStream.addNumberToSink(myNum);
+  //   } else {
+  //     setState(() {
+  //       lastNumber = -1;
+  //     });
+  //   }
+  // }
 
-  Future<void> calculate() async {
-    try {
-      await Future.delayed(const Duration(seconds: 5));
-      completer.complete(42);
-    } catch (_) {
-      completer.completeError('Error calculating the number');
-    }
-  }
+  // void triggerError() {
+  //   numberStreamController.sink.addError('Something went wrong');
+  // }
 
-  Future<void> count() async {
-    int total = 0;
-    total = await returnOneAsync();
-    total += await returnTwoAsync();
-    total += await returnThreeAsync();
-    setState(() {
-      result = total.toString();
-    });
-  }
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       title: const Text('Stream Example'),
+  //     ),
+  //     body: SizedBox(
+  //       width: double.infinity,
+  //       child: Column(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         crossAxisAlignment: CrossAxisAlignment.center,
+  //         children: [
+  //           Text(
+  //             'Last Number: $lastNumber',
+  //             style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+  //           ),
+  //           Text(values),
+  //           ElevatedButton(
+  //             onPressed: addRandomNumber,
+  //             child: const Text('New Random Number'),
+  //           ),
+  //           ElevatedButton(
+  //             onPressed: triggerError,
+  //             child: const Text('Trigger Error'),
+  //           ),
+  //           ElevatedButton(
+  //             onPressed: stopStream,
+  //             child: const Text('Stop Subscription'),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 }
