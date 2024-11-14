@@ -8,72 +8,494 @@
 
 <br>
 
-# Minggu Ke-10
+# Minggu Ke-11
 
-# Tugas Praktikum 1: Dasar State dengan Model-View
+# Praktikum 1: Mengunduh Data dari Web Service (API)
 
-1.  Selesaikan langkah-langkah praktikum tersebut, lalu dokumentasikan berupa GIF hasil akhir praktikum beserta penjelasannya di file README.md! Jika Anda menemukan ada yang error atau tidak berjalan dengan baik, silakan diperbaiki.
-2.  Jelaskan maksud dari langkah 4 pada praktikum tersebut! Mengapa dilakukan demikian?
+## Langkah 1: Buat Project Baru
 
-    answers :
-    Langkah 4 pada praktikum tersebut mengarahkan Anda untuk membuat file plan.dart di dalam folder models dan mengisinya dengan kode untuk mendefinisikan kelas Plan. Berikut adalah penjelasan dan alasan di balik langkah ini:
+```dart
+flutter pub add http
+```
 
-    Membuat Struktur Data: Kelas Plan berfungsi sebagai model data yang menyimpan daftar tugas. Ini membantu memisahkan logika bisnis dari tampilan (UI), yang merupakan praktik terbaik dalam pengembangan aplikasi.
-    Organisasi Kode: Dengan menempatkan model di folder models, kode menjadi lebih terorganisir dan mudah dikelola. Ini memudahkan pengembang untuk menemukan dan memperbarui bagian tertentu dari aplikasi.
-    Pemeliharaan dan Skalabilitas: Memisahkan model dari tampilan memungkinkan aplikasi untuk lebih mudah dipelihara dan diskalakan. Perubahan pada logika data tidak akan mempengaruhi tampilan dan sebaliknya.
+## Langkah 2: Cek File pubspec.yaml
 
-3.  Mengapa perlu variabel plan di langkah 6 pada praktikum tersebut? Mengapa dibuat konstanta ?
+![alt text](/lib/image/m11-p1-l2.png)
 
-    answer :
-    Variabel plan di langkah 6 pada praktikum tersebut berfungsi sebagai model data yang menyimpan daftar tugas. Berikut adalah alasan mengapa variabel ini diperlukan dan mengapa dibuat sebagai konstanta:
+## Langkah 3: buka file main.dart
 
-    Penyimpanan Data: plan digunakan untuk menyimpan dan mengelola data tugas yang akan ditampilkan di aplikasi. Ini memungkinkan aplikasi untuk menambah, mengubah, dan menghapus tugas sesuai kebutuhan pengguna.
-    Pemeliharaan State: Dengan menggunakan variabel plan, aplikasi dapat dengan mudah melacak perubahan pada daftar tugas dan memperbarui tampilan UI secara dinamis ketika ada perubahan data.
-    Konstanta untuk Immutabilitas: Membuat plan sebagai konstanta (const Plan()) memastikan bahwa instance awal dari Plan tidak dapat diubah. Ini membantu dalam menjaga integritas data dan mencegah perubahan yang tidak disengaja pada instance awal. Immutabilitas juga dapat meningkatkan performa aplikasi karena Flutter dapat mengoptimalkan rendering komponen yang tidak berubah.
+Soal 1
+Tambahkan nama panggilan Anda pada title app sebagai identitas hasil pekerjaan Anda
 
-4.  Lakukan capture hasil dari Langkah 9 berupa GIF, kemudian jelaskan apa yang telah Anda buat!
+```dart
+import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
+import 'package:async/async.dart';
 
-    answer :
+void main() {
+  runApp(const MyApp());
+}
 
-    ![alt text](lib/image/p1-outout.png)
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
-5.  Apa kegunaan method pada Langkah 11 dan 13 dalam lifecyle state ?
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Rizqi Reza Danuarta',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: const FuturePage(),
+    );
+  }
+}
 
-        answer :
-        initState(): Method ini digunakan untuk menginisialisasi state. Pada Langkah 11, initState() digunakan untuk menginisialisasi ScrollController yang akan mengatur perilaku scroll dan keyboard pada aplikasi.
+class FuturePage extends StatefulWidget {
+  const FuturePage({Key? key}) : super(key: key);
 
-    dispose(): Method ini digunakan untuk membersihkan resource ketika widget tidak lagi digunakan1. Pada Langkah 13, dispose() digunakan untuk membersihkan ScrollController agar tidak terjadi kebocoran memori.
+  @override
+  State<FuturePage> createState() => _FuturePageState();
+}
 
-Tugas Praktikum 2: 2: InheritedWidget
+class _FuturePageState extends State<FuturePage> {
+  // late Completer<int> completer;
 
-1. Selesaikan langkah-langkah praktikum tersebut, lalu dokumentasikan berupa GIF hasil akhir praktikum beserta penjelasannya di file README.md! Jika Anda menemukan ada yang error atau tidak berjalan dengan baik, silakan diperbaiki sesuai dengan tujuan aplikasi tersebut dibuat.
-2. Jelaskan mana yang dimaksud InheritedWidget pada langkah 1 tersebut! Mengapa yang digunakan InheritedNotifier?
+  String result = '';
+  // bool isLoading = false;
 
-   answer :
-   Pada langkah 1, yang dimaksud dengan InheritedWidget adalah sebuah widget yang memungkinkan data atau state untuk dibagikan ke seluruh widget tree tanpa harus melewati constructor dari setiap widgetInheritedWidget sangat berguna untuk mengelola state yang perlu diakses oleh banyak widget dalam aplikasi Flutter1.
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Back From the Future'),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            const Spacer(),
+            ElevatedButton(
+              child: const Text('GO!'),
+              onPressed: () {
+                // returnFG();
+                // getNumber().then((value){
+                //   setState(() {
+                //     result = 'Result: $value';
+                //   });
+                // });
+                // setState(() {
+                //   isLoading = true;
+                //   result = '';
+                // });
+                // getNumber().then((value) {
+                //   setState(() {
+                //     result = value.toString();
+                //     isLoading = false;
+                //   });
+                // }).catchError((_) {
+                //   setState(() {
+                //     result = 'An error occurred';
+                //     isLoading = false;
+                //   });
+                // });
+              },
+            ),
+            const Spacer(),
+            Text(result),
+            const Spacer(),
+            const CircularProgressIndicator(),
+            // if (isLoading) const CircularProgressIndicator(),
+            const Spacer(),
+          ],
+        ),
+      ),
+    );
+  }
+```
 
-   Namun, dalam kasus ini, digunakan InheritedNotifier sebagai gantinyaInheritedNotifier adalah varian dari InheritedWidget yang dirancang khusus untuk bekerja dengan objek Listenable, seperti ChangeNotifier atau ValueNotifier InheritedNotifier memungkinkan widget untuk mendengarkan perubahan pada objek Listenable dan memperbarui dirinya sendiri ketika ada perubahan
+## Langkah 4: Tambah Method getData()
 
-3. Jelaskan maksud dari method di langkah 3 pada praktikum tersebut! Mengapa dilakukan demikian?
+```dart
+Future<Response> getData() async {
+    const authority = 'www.googleapis.com';
+    const path = '/books/v1/volumes/junbDwAAQBAJ';
+    Uri url = Uri.https(authority, path);
+    return http.get(url);
+  }
+```
 
-   answer :
+## Soal 2
 
-   Method initState() adalah bagian dari lifecycle widget di Flutter yang dipanggil sekali ketika stateful widget pertama kali dibuat. Ini adalah tempat yang tepat untuk melakukan inisialisasi yang hanya perlu dilakukan sekali, seperti mengatur controller, listener, atau memulai animasi.
-   Alasan Penggunaan: Dalam konteks praktikum ini, initState() digunakan untuk menginisialisasi ScrollController dan menambahkan listener padanya. Listener ini akan memanggil FocusScope.of(context).requestFocus(FocusNode()) setiap kali ada perubahan pada posisi scroll. Ini berguna untuk menghilangkan fokus dari input field ketika pengguna menggulir daftar, sehingga keyboard akan disembunyikan secara otomatis.
+![alt text](/lib/image/m11-p1-soal2.png)
 
-4. Lakukan capture hasil dari Langkah 9 berupa GIF, kemudian jelaskan apa yang telah Anda buat!
+## Langkah 5: Tambahkan kode di elevaluatedButton
 
-   answer : hasilnya tetep sama tidak ada perubahan pada tampilan ui karena pada kode program diatas digunakan untuk memisah antara view dan model
+```dart
+onPressed: () {
+                setState(() {});
+                getData().then((value) {
+                  result = value.body.toString().substring(0, 450);
+                  setState(() {});
+                }).catchError((_) {
+                  result = 'An error occured';
+                  setState(() {});
+                });
+```
 
-   ![alt text](lib/image/p1-outout.png)
+## Soal 3
 
-# Tugas Praktikum 3: State di Multiple Screens
+- SubString : mengambil data yang diterima dari hasil permintaan HTTP (value.body) dalam bentuk teks, kemudian mengonversinya menjadi String (jika belum berupa String) dan menggunakan substring(0, 450) untuk memotong hanya 450 karakter pertama dari teks tersebut.
 
-1. Selesaikan langkah-langkah praktikum tersebut, lalu dokumentasikan berupa GIF hasil akhir praktikum beserta penjelasannya di file README.md! Jika Anda menemukan ada yang error atau tidak berjalan dengan baik, silakan diperbaiki sesuai dengan tujuan aplikasi tersebut dibuat.
-2. Berdasarkan Praktikum 3 yang telah Anda lakukan, jelaskan maksud dari gambar diagram berikut ini!
-3. Lakukan capture hasil dari Langkah 14 berupa GIF, kemudian jelaskan apa yang telah Anda buat!
-4. Kumpulkan laporan praktikum Anda berupa link commit atau repository GitHub ke spreadsheet yang telah disediakan!
+* catcheror : digunakan di sini untuk menangani kondisi ketika getData() mengalami kesalahan, seperti koneksi gagal atau respons dari server tidak sesuai harapan. Jika terjadi kesalahan, variabel result akan diubah menjadi 'An error occured', dan setState dipanggil untuk memperbarui tampilan UI agar pesan kesalahan tersebut dapat muncul di layar.
 
-hasil output dari Tugas Praktikum 3 :
+![alt text](/lib/image/m11-p1-soal3.png)
 
-![alt text](lib/image/p3-tugas.png)
+# Praktikum 2: Menggunakan await/async untuk menghindari callbacks
+
+## Langkah 1: Buka file main.dart
+
+```dart
+Future<int> returnOneAsync() async {
+    await Future.delayed(const Duration(seconds: 3));
+    return 1;
+  }
+
+  Future<int> returnTwoAsync() async {
+    await Future.delayed(const Duration(seconds: 3));
+    return 2;
+  }
+
+  Future<int> returnThreeAsync() async {
+    await Future.delayed(const Duration(seconds: 3));
+    return 3;
+  }
+```
+
+## Langkah 2: Tambah method count()
+
+```dart
+Future<void> count() async {
+    int total = 0;
+    total = await returnOneAsync();
+    total += await returnTwoAsync();
+    total += await returnThreeAsync();
+    setState(() {
+      result = total.toString();
+    });
+  }
+```
+
+## Soal 4
+
+- jelaskan maksud kode langkah 1 dan 2 jelaskan
+- langkah 1 : Fungsi returnOneAsync, returnTwoAsync, dan returnThreeAsync adalah fungsi asynchronous yang masing-masing menunda eksekusi selama 3 detik menggunakan Future.delayed. Setelah penundaan tersebut, setiap fungsi mengembalikan nilai integer tetap, yaitu 1, 2, dan 3 secara berurutan. Fungsi ini berguna untuk mensimulasikan proses asynchronous, seperti panggilan jaringan atau operasi pemrosesan data, yang memerlukan waktu sebelum hasilnya tersedia.
+
+* langkah 2 : Fungsi count adalah fungsi asynchronous yang digunakan untuk menghitung total dari hasil tiga fungsi asynchronous lainnya: returnOneAsync, returnTwoAsync, dan returnThreeAsync. Pada setiap pemanggilan fungsi, await digunakan untuk menunggu nilai yang dikembalikan sebelum melanjutkan ke pemanggilan berikutnya. Nilai yang dikembalikan dari ketiga fungsi ini dijumlahkan dan disimpan dalam variabel total. Setelah ketiga operasi selesai, setState dipanggil untuk memperbarui nilai result pada tampilan dengan hasil total tersebut.
+
+# Praktikum 3: Menggunakan Completer di Future
+
+## Langkah 1: buka main.dart
+
+```dart
+import 'package:async/async.dart';
+```
+
+## Langkah 2: Tambah variabel dan method
+
+```dart
+late Completer completer;
+
+Future getNumber() {
+  completer = Completer<int>();
+  calculate();
+  return completer.future;
+}
+
+Future calculate() async {
+  await Future.delayed(const Duration(seconds : 5));
+  completer.complete(42);
+}
+```
+
+## Langkah 3: Ganti isi kode onPresed()
+
+```dart
+onPressed: () {
+                getNumber().then((value) {
+                  setState(() {
+                    result = value.toString();
+                  });
+                });
+```
+
+## Langkah 4:
+
+![alt text](/lib/image/m11-p3-l4.png)
+
+## Soal 5
+
+- langkah 2: Completer untuk mengelola operasi asynchronous secara manual. Pertama, variabel completer dideklarasikan dengan tipe Completer<int>, yang akan digunakan untuk menyelesaikan sebuah Future dengan nilai integer. Fungsi getNumber menginisialisasi completer, memanggil fungsi calculate, dan kemudian mengembalikan completer.future, yaitu Future yang akan diselesaikan nanti. Fungsi calculate adalah fungsi asynchronous yang menunggu selama 5 detik menggunakan Future.delayed, kemudian memanggil completer.complete(42) untuk menyelesaikan Future dengan nilai 42. Dengan demikian, ketika getNumber dipanggil, ia akan mengembalikan sebuah Future yang akan menyelesaikan nilai 42 setelah jeda waktu 5 detik, memungkinkan pengelolaan alur asynchronous secara eksplisit dalam aplikasi.
+
+## Langkah 5: ganti method calculate()
+
+```dart
+Future<void> calculate() async {
+    // await Future.delayed(const Duration(seconds: 5));
+    // completer.complete(42);
+    try {
+      await Future.delayed(const Duration(seconds: 5));
+      completer.complete(42);
+    } catch (_) {
+      completer.completeError('Error calculating the number');
+    }
+  }
+```
+
+## Langkha 6: pindah ke onpresed()
+
+```dart
+getNumber().then((value) {
+  setState(() {
+    result = value.toString();
+  });
+}).catchError((e) {
+  result = 'An error occurred';
+});
+```
+
+## Soal 6
+
+- langkah 5-6 : calculate secara asynchronous menunggu selama 5 detik menggunakan Future.delayed. Setelah waktu tunggu, completer.complete(42) dipanggil untuk menyelesaikan Future dengan nilai 42. Jika terjadi error selama eksekusi, completer.completeError('Error calculating the number') akan dipanggil, sehingga Future menghasilkan error. Pemanggilan getNumber() akan mengembalikan Future tersebut. Kemudian, then digunakan untuk menangani hasil dari Future dan menampilkan hasil value (dalam bentuk String) ke dalam variabel result di dalam setState. Jika terjadi error, catchError akan menampilkan pesan 'An error occurred' di result.
+
+## Praktikum 4: Memanggil Future secara paralel
+
+## Langkah 1: buka file main.dart
+
+```dart
+void returnFG() {
+    FutureGroup<int> futureGroup = FutureGroup();
+    futureGroup.add(returnOneAsync());
+    futureGroup.add(returnTwoAsync());
+    futureGroup.add(returnThreeAsync());
+    futureGroup.close();
+    futureGroup.future.then((List<int> value) {
+      int total = 0;
+      for (var element in value) {
+        total += element;
+      }
+      setState(() {
+        result = total.toString();
+      });
+    });
+  }
+```
+
+## Langkah 2: edit onPresed()
+
+```dart
+returnFG();
+```
+
+## Soal 7
+
+![alt text](/lib/image/m11-p4-l2.png)
+
+## Langkah 4: ganti variabel futureGroup
+
+```dart
+void returnFG() {
+  final futures = Future.wait<int>([
+    returnOneAsync(),
+    returnTwoAsync(),
+    returnThreeAsync(),
+  ]);
+
+  futures.then((List<int> value) {
+    int total = 0;
+    for (var element in value) {
+      total += element;
+    }
+    setState(() {
+      result = total.toString();
+    });
+  });
+}
+```
+
+## Soal 8
+
+- Jelaskan maksud perbedaan kode langkah 1 dan 4 : Perbedaan antara kode langkah 1 dan langkah 4 terletak pada cara menangani beberapa Future secara bersamaan. Pada kode langkah 1, digunakan FutureGroup, yang memungkinkan penambahan beberapa Future secara manual satu per satu dan kemudian menunggu hasilnya setelah grup Future ditutup dengan futureGroup.close(). Sedangkan pada kode langkah 4, digunakan Future.wait(), yang langsung menerima sebuah daftar Future dan mengembalikan Future yang selesai ketika semua Future di dalam daftar tersebut selesai. Kode langkah 4 lebih ringkas karena langsung menggunakan Future.wait() untuk mengelola beberapa Future tanpa perlu menambahkannya satu per satu.
+
+# Praktikum 5: Menangani Respon Error pada Async Code
+
+## Langkah 1: buka file main.dart
+
+```dart
+Future returnError() async {
+    await Future.delayed(const Duration(seconds: 2));
+    throw Exception('Something went wrong');
+  }
+```
+
+## Langkah 2: Evalated Button
+
+```dart
+onPressed: () {
+                returnError().then((value) {
+                  setState(() {
+                    result = 'Succes';
+                  });
+                }).catchError((onError) {
+                  setState(() {
+                    result = onError.toString();
+                  });
+                }).whenComplete(() => print('completed'));
+```
+
+## Langkah 3: Run
+
+## Soal 9
+
+![alt text](/lib/image/m11-p5-l3.png)
+
+## Langkah 4: tambah method handleError()
+
+```dart
+Future handleError() async {
+    try {
+      await returnError();
+    } catch (error) {
+      setState(() {
+        result = error.toString();
+      });
+    } finally {
+      print('complete');
+    }
+  }
+```
+
+## Soal 10
+
+- Panggil method handleError() tersebut di ElevatedButton, lalu run. Apa hasilnya? Jelaskan perbedaan kode langkah 1 dan 4!
+
+![alt text](/lib/image/m11-p5-soal10.png))
+meskipun hasilnya sama namun dalam pembacaan kode sudah berhasil untuk menangani atau menghandle eror berikut adalah buktinya dalam bentuk terminal
+
+![alt text](/lib/image/m11-p5-soal10output.png)
+
+# Praktikum 6: Menggunakan Future dengan StatefulWidget
+
+## Langkah 1: install plugin geolocator
+
+```dart
+flutter pub add geolocator
+```
+
+## Langkah 2: Tambah permission GPS
+
+```dart
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <application
+```
+
+## Langkah 3: Buat file geolocation.dart
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+
+class LocationScreen extends StatefulWidget {
+  const LocationScreen({super.key});
+
+  @override
+  State<LocationScreen> createState() => _LocationScreenState();
+}
+
+class _LocationScreenState extends State<LocationScreen> {
+  String myPosition = '';
+
+  @override
+  void initState() {
+    super.initState();
+    getPosition().then((Position myPos) {
+      myPosition =
+          'Latitude: ${myPos.latitude.toString()} - Longitude: ${myPos.longitude.toString()}';
+      setState(() {
+        myPosition = myPosition;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Current Location')),
+      body: Center(child: Text(myPosition)),
+    );
+  }
+
+  Future<Position> getPosition() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied.');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
+}
+```
+
+## Soal 11
+
+- Tambahkan nama panggilan Anda pada tiap properti title sebagai identitas pekerjaan Anda.
+
+![alt text](/lib/image/m11-p6-soal11.png)
+
+## Soal 12
+
+- Jika Anda tidak melihat animasi loading tampil, kemungkinan itu berjalan sangat cepat. Tambahkan delay pada method getPosition() dengan kode await Future.delayed(const Duration(seconds: 3));
+- Apakah Anda mendapatkan koordinat GPS ketika run di browser? Mengapa demikian?
+
+jawaban : Di browser, terutama di emulator atau pengembangan Flutter Web, akses ke GPS mungkin tidak langsung tersedia karena browser tidak selalu mendukung akses perangkat keras seperti GPS (terutama jika diakses di desktop atau laptop)
+
+# Praktikum 7: Manajemen Future dengan FutureBuilder
+
+## Soal 13
+
+-Apakah ada perbedaan UI dengan praktikum sebelumnya? Mengapa demikian?
+Capture hasil praktikum Anda berupa GIF dan lampirkan di README. Lalu lakukan commit dengan pesan "W12: Soal 13".
+
+jawaban : iya terdapat perbedaan dimana animation loading dulu yang ditampilkan setelah itu baru locationnya di munculkan
+
+## Soal 14
+
+jawaban : terdapat sedikit perbedaan ui dikarenakan pada kode sebelumnya masih belum ada handling error
+
+# Praktikum 8: Navigation route dengan Future Function
+
+![alt text](/lib/image/m11-p8.png)
+![alt text](/lib/image/m11-p8-1.png)
+![alt text](/lib/image/m11-p8-red.png)
+![alt text](/lib/image/m11-p8-green.png)
+
+# Praktikum 9: Memanfaatkan async/await dengan Widget Dialog
+
+![alt text](image.png)
