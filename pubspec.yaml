@@ -38,6 +38,9 @@ dependencies:
   auto_size_text: ^3.0.0
   http: ^1.2.2
   geolocator: ^13.0.1
+  shared_preferences: ^2.3.3
+  path_provider: ^2.1.5
+  flutter_secure_storage: ^9.2.2
 
 dev_dependencies:
   flutter_test:
@@ -55,6 +58,7 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   assets:
+    - assets/
     - lib/image/logo_polinema.png
     - lib/image/rinjani.jpeg
 

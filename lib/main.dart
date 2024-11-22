@@ -1,209 +1,192 @@
-import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'dart:math';
-
-import 'package:flutter_fundamental/pages/random_screen.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_fundamental/pages/pizza.dart';
+import 'dart:io';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Stream Example',
+      title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
+        primarySwatch: Colors.blue,
       ),
-      home: RandomScreen(),
+      home: const MyHomePage(),
     );
   }
 }
 
-class NumberStream {
-  late StreamController<int> controller;
-
-  NumberStream() {
-    controller = StreamController<int>.broadcast();
-  }
-
-  void addNumberToSink(int number) {
-    controller.sink.add(number);
-  }
-
-  Stream<int> getNumber() {
-    return controller.stream;
-  }
-}
-
-class StreamHomePage extends StatefulWidget {
-  const StreamHomePage({Key? key}) : super(key: key);
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
 
   @override
-  State<StreamHomePage> createState() => _StreamHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class RandomNumberBloc {
-  final _randomNumberController = StreamController<int>();
-  Stream<int> get randomNumber => _randomNumberController.stream;
-  final _generateRandomNumberController = StreamController<void>();
-  Sink<void> get generateRandomNumber => _generateRandomNumberController.sink;
+class _MyHomePageState extends State<MyHomePage> {
+  List<Pizza> myPizzas = [];
+  int appCounter = 0;
+  String documentPath = '';
+  String tempPath = '';
+  late File myFile;
+  String fileText = '';
+  final pwdController = TextEditingController();
+  String myPass = '';
+  final storage = const FlutterSecureStorage();
+  final myKey = 'myPass';
 
-  RandomNumberBloc() {
-    _generateRandomNumberController.stream.listen((_) {
-      final random = Random();
-      _randomNumberController.sink.add(random.nextInt(100));
+  Future writeToSecureStorage() async {
+    await storage.write(key: myKey, value: pwdController.text);
+  }
+
+  Future<String> readFromSecureStorage() async {
+    String secret = await storage.read(key: myKey) ?? '';
+    return secret;
+  }
+
+  Future<bool> readFile() async {
+    try {
+      await myFile.writeAsString('Margherita, Capricciosa, napoli');
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Fungsi untuk mendapatkan path direktori
+  Future getPath() async {
+    final docDir = await getApplicationDocumentsDirectory();
+    final tempDir = await getTemporaryDirectory();
+
+    // Update state dengan path direktori
+    setState(() {
+      documentPath = docDir.path;
+      tempPath = tempDir.path;
     });
   }
 
-  void dispose() {
-    _randomNumberController.close();
-    _generateRandomNumberController.close();
+  // Fungsi untuk membaca dan menulis SharedPreferences
+  Future readAndWritePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      appCounter = prefs.getInt('appCounter') ?? 0;
+      appCounter++;
+      prefs.setInt('appCounter', appCounter);
+    });
   }
-}
 
-class _StreamHomePageState extends State<StreamHomePage> {
-  final _bloc = RandomNumberBloc();
+  // Fungsi untuk menghapus SharedPreferences
+  Future deletePreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    setState(() {
+      appCounter = 0;
+    });
+  }
+
+  // Fungsi untuk membaca file JSON dari assets
+  Future<List<Pizza>> readJsonFile() async {
+    String myString = await DefaultAssetBundle.of(context)
+        .loadString('assets/pizzalist.json');
+    List<dynamic> pizzaMapList = jsonDecode(myString);
+    List<Pizza> myPizzas = [];
+    for (var pizza in pizzaMapList) {
+      myPizzas.add(Pizza.fromJson(pizza));
+    }
+    String json = convertToJSON(myPizzas);
+    print(json);
+    return myPizzas;
+  }
+
+  // Fungsi untuk mengonversi list Pizza ke JSON
+  String convertToJSON(List<Pizza> pizzas) {
+    return jsonEncode(pizzas.map((pizza) => pizza.toJson()).toList());
+  }
 
   @override
-  void dispose() {
-    _bloc.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    getPath();
+    // readAndWritePreference();
+    // readJsonFile().then((value) {
+    //   setState(() {
+    //     myPizzas = value;
+    //   });
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Random Number'),
+        title: const Text('Path Provider'),
       ),
-      body: Center(
-        child: StreamBuilder<int>(
-          stream: _bloc.randomNumber,
-          initialData: 0,
-          builder: (context, snapshot) {
-            return Text(
-              'Random Number: ${snapshot.data}',
-              style: const TextStyle(fontSize: 24),
-            );
-          },
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextField(
+                controller: pwdController,
+              ),
+              ElevatedButton(
+                child: const Text('save value'),
+                onPressed: () {
+                  writeToSecureStorage();
+                },
+              ),
+              ElevatedButton(
+                child: const Text('read value'),
+                onPressed: () {
+                  readFromSecureStorage().then((value) {
+                    setState(() {
+                      myPass = value;
+                    });
+                  });
+                },
+              ),
+              Text(myPass),
+            ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _bloc.generateRandomNumber.add(null),
-        child: const Icon(Icons.refresh),
-      ),
+      // body: Container(
+      //   padding: const EdgeInsets.all(16.0),
+      //   child: Center(
+      //     child: Column(
+      //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //       children: [
+      //         Text('You have opened the app $appCounter times.'),
+      //         ElevatedButton(
+      //           onPressed: () {
+      //             deletePreference();
+      //           },
+      //           child: const Text('Reset counter'),
+      //         ),
+      //         // Expanded(
+      //         //   child: ListView.builder(
+      //         //     itemCount: myPizzas.length,
+      //         //     itemBuilder: (context, index) {
+      //         //       return ListTile(
+      //         //         title: Text(myPizzas[index].pizzaName),
+      //         //         subtitle: Text(myPizzas[index].description),
+      //         //       );
+      //         //     },
+      //         //   ),
+      //         // ),
+      //       ],
+      //     ),
+      //   ),
+      // ),
     );
   }
-
-  // int lastNumber = 0;
-  // late StreamController<int> numberStreamController;
-  // late StreamSubscription subscription;
-  // late StreamSubscription subscription2;
-  // String values = '';
-  // late Timer _timer;
-  // int currentNumber = 0;
-  // late NumberStream numberStream;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-
-  //   numberStream = NumberStream();
-  //   numberStreamController = numberStream.controller;
-
-  //   subscription = numberStreamController.stream.listen((event) {
-  //     setState(() {
-  //       values += '$event - ';
-  //     });
-  //   }, onError: (error) {
-  //     setState(() {
-  //       lastNumber = -1;
-  //     });
-  //   }, onDone: () {
-  //     print('onDone was called');
-  //   });
-
-  //   subscription2 = numberStreamController.stream.listen((event) {
-  //     setState(() {
-  //       values += '$event - ';
-  //     });
-  //   });
-
-  //   _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-  //     if (currentNumber <= 90) {
-  //       numberStreamController.sink.add(currentNumber);
-  //       currentNumber += 10;
-  //     } else {
-  //       _timer.cancel();
-  //     }
-  //   });
-  // }
-
-  // void stopStream() {
-  //   numberStreamController.close();
-  // }
-
-  // @override
-  // void dispose() {
-  //   _timer.cancel();
-  //   numberStreamController.close();
-  //   subscription.cancel();
-  //   subscription2.cancel();
-  //   super.dispose();
-  // }
-
-  // void addRandomNumber() {
-  //   Random random = Random();
-  //   int myNum = random.nextInt(10);
-  //   if (!numberStreamController.isClosed) {
-  //     numberStream.addNumberToSink(myNum);
-  //   } else {
-  //     setState(() {
-  //       lastNumber = -1;
-  //     });
-  //   }
-  // }
-
-  // void triggerError() {
-  //   numberStreamController.sink.addError('Something went wrong');
-  // }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: const Text('Stream Example'),
-  //     ),
-  //     body: SizedBox(
-  //       width: double.infinity,
-  //       child: Column(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         crossAxisAlignment: CrossAxisAlignment.center,
-  //         children: [
-  //           Text(
-  //             'Last Number: $lastNumber',
-  //             style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-  //           ),
-  //           Text(values),
-  //           ElevatedButton(
-  //             onPressed: addRandomNumber,
-  //             child: const Text('New Random Number'),
-  //           ),
-  //           ElevatedButton(
-  //             onPressed: triggerError,
-  //             child: const Text('Trigger Error'),
-  //           ),
-  //           ElevatedButton(
-  //             onPressed: stopStream,
-  //             child: const Text('Stop Subscription'),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 }
