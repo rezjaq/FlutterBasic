@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_fundamental/http/http_helper.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -43,6 +44,12 @@ class _MyHomePageState extends State<MyHomePage> {
   String myPass = '';
   final storage = const FlutterSecureStorage();
   final myKey = 'myPass';
+
+  Future<List<Pizza>> callPizza() async {
+    HttpHelper helper = HttpHelper();
+    List<Pizza> pizzas = await helper.getPizzaList();
+    return pizzas;
+  }
 
   Future writeToSecureStorage() async {
     await storage.write(key: myKey, value: pwdController.text);
@@ -128,65 +135,31 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Path Provider'),
+        title: const Text('JSON'),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              TextField(
-                controller: pwdController,
-              ),
-              ElevatedButton(
-                child: const Text('save value'),
-                onPressed: () {
-                  writeToSecureStorage();
-                },
-              ),
-              ElevatedButton(
-                child: const Text('read value'),
-                onPressed: () {
-                  readFromSecureStorage().then((value) {
-                    setState(() {
-                      myPass = value;
-                    });
-                  });
-                },
-              ),
-              Text(myPass),
-            ],
-          ),
-        ),
+      body: FutureBuilder(
+        future: callPizza(),
+        builder: (BuildContext context, AsyncSnapshot<List<Pizza>> snapshot) {
+          if (snapshot.hasError) {
+            return const Text('Something went wrong');
+          }
+          if (!snapshot.hasData) {
+            return const CircularProgressIndicator();
+          }
+
+          return ListView.builder(
+            itemCount: (snapshot.data == null) ? 0 : snapshot.data!.length,
+            itemBuilder: (BuildContext context, int position) {
+              return ListTile(
+                title: Text(snapshot.data![position].pizzaName),
+                subtitle: Text(snapshot.data![position].description +
+                    ' - € ' +
+                    snapshot.data![position].price.toString()),
+              );
+            },
+          );
+        },
       ),
-      // body: Container(
-      //   padding: const EdgeInsets.all(16.0),
-      //   child: Center(
-      //     child: Column(
-      //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      //       children: [
-      //         Text('You have opened the app $appCounter times.'),
-      //         ElevatedButton(
-      //           onPressed: () {
-      //             deletePreference();
-      //           },
-      //           child: const Text('Reset counter'),
-      //         ),
-      //         // Expanded(
-      //         //   child: ListView.builder(
-      //         //     itemCount: myPizzas.length,
-      //         //     itemBuilder: (context, index) {
-      //         //       return ListTile(
-      //         //         title: Text(myPizzas[index].pizzaName),
-      //         //         subtitle: Text(myPizzas[index].description),
-      //         //       );
-      //         //     },
-      //         //   ),
-      //         // ),
-      //       ],
-      //     ),
-      //   ),
-      // ),
     );
   }
 }

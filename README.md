@@ -10,11 +10,11 @@
 
 # Minggu Ke-13
 
-# Praktikum 1: Converting Dart models into JSON
+# Praktikum 1, Designing an HTTP client and getting data
 
 ## Hasil Output Praktikum 1
 
-![alt text](/lib/image/m13-p1-o1.png)
+![alt text](/lib/image/w14-p1.png)
 
 ## Hasil Output Praktikum 2
 
