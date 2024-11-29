@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class Pizza {
   final int id;
   final String pizzaName;
@@ -15,12 +13,21 @@ class Pizza {
     required this.imageUrl,
   });
 
+  // Konstruktor default untuk membuat objek Pizza kosong
+  Pizza.empty()
+      : id = 0,
+        pizzaName = '',
+        description = '',
+        price = 0.0,
+        imageUrl = '';
+
   Pizza.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         pizzaName = json['pizzaName'],
         description = json['description'],
         price = (json['price'] as num).toDouble(),
         imageUrl = json['imageUrl'];
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

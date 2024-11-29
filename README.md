@@ -16,27 +16,14 @@
 
 ![alt text](/lib/image/w14-p1.png)
 
-## Hasil Output Praktikum 2
+## Praktikum 2. POST-ing data
 
-![alt text](/lib/image/m13-p1-o2.png)
+![alt text](/lib/image/m14-p2.png)
 
-# Praktikum 2: Reading the JSON file
+# PPraktikum 3, PUT-ting data
 
-![alt text](/lib/image/m13-p2-01.png)
+![alt text](/lib/image/m14-p3.png)
 
-# Praktikum 3: Saving data simply with SharedPreferences
+# PPraktikum 4, PUT-ting data
 
-![alt text](/lib/image/m13-p3-o1.png)
-![alt text](/lib/image/m13-p3-o1.png)
-
-# Praktikum 4: Accessing the filesystem, part 1: path_provider
-
-![alt text](/lib/image/m13-p4-o1.png)
-
-# Praktikum 5: Accessing the filesystem, part 2: Working with directories
-
-![alt text](/lib/image/m13-p5-o1.png)
-
-# Praktikum 6: Using secure storage to store data
-
-![alt text](/lib/image/m13-p6-o1.png)
+![alt text](/lib/image/m14-p4.gif)
